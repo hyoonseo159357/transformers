@@ -10,6 +10,7 @@ import datetime
 import torch
 from accelerate import PartialState
 from accelerate.utils import set_seed
+import torch_neuron # 변경이나추가해준부분
 
 
 from transformers import (
@@ -340,7 +341,9 @@ def main():
     tokenizer = tokenizer_class.from_pretrained(args.model_name_or_path)
     if tokenizer.pad_token is None:
         tokenizer.pad_token = tokenizer.eos_token
-    model = model_class.from_pretrained(args.model_name_or_path)
+    model_ = model_class.from_pretrained(args.model_name_or_path)
+    example_inputs = torch.ones([1, 128], dtype=torch.long)
+    model = torch_neuron.trace(model_, example_inputs)
 
     # Set the model to the right device 모델을 distributed_state.device에 지정된 디바이스(CPU, GPU 등)
     # 로 이동합니다. 이는 모델의 계산을 해당 디바이스에서 수행하도록 설정하는 단계입니다.
