@@ -341,9 +341,7 @@ def main():
     tokenizer = tokenizer_class.from_pretrained(args.model_name_or_path)
     if tokenizer.pad_token is None:
         tokenizer.pad_token = tokenizer.eos_token
-    model_ = model_class.from_pretrained(args.model_name_or_path)
-    example_inputs = torch.ones([1, 128], dtype=torch.long)
-    model = torch_neuron.trace(model_, example_inputs)
+    model = model_class.from_pretrained(args.model_name_or_path)
 
     # Set the model to the right device 모델을 distributed_state.device에 지정된 디바이스(CPU, GPU 등)
     # 로 이동합니다. 이는 모델의 계산을 해당 디바이스에서 수행하도록 설정하는 단계입니다.
@@ -401,7 +399,8 @@ def main():
         else:
             sig = inspect.signature(model.__call__)
         jit_inputs = tuple(jit_inputs[key] for key in sig.parameters if jit_inputs.get(key, None) is not None)
-        traced_model = torch.jit.trace(model, jit_inputs, strict=False)
+        # traced_model = torch.jit.trace(model, jit_inputs, strict=False)
+        traced_model = torch_neuron.trace(model, example_inputs)
         traced_model = torch.jit.freeze(traced_model.eval())
         traced_model(*jit_inputs)
         traced_model(*jit_inputs)
