@@ -1,28 +1,12 @@
-#!/usr/bin/env python
-# coding=utf-8
-# Copyright 2018 Google AI, Google Brain and Carnegie Mellon University Authors and the HuggingFace Inc. team.
-# Copyright (c) 2018, NVIDIA CORPORATION.  All rights reserved.
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+
 """ Conditional text generation with the auto-regressive models of the library (GPT/GPT-2/CTRL/Transformer-XL/XLNet)
 """
-
 
 import argparse
 import inspect
 import logging
 from typing import Tuple
-
+import datetime
 import torch
 from accelerate import PartialState
 from accelerate.utils import set_seed
@@ -407,6 +391,8 @@ def main():
 
         model = _ModelFallbackWrapper(traced_model, model)
 
+    start = datetime.datetime.now()
+
     output_sequences = model.generate(
         input_ids=input_ids,
         max_length=args.length + len(encoded_prompt[0]),
@@ -417,7 +403,10 @@ def main():
         do_sample=True,
         num_return_sequences=args.num_return_sequences,
     )
-
+    
+    end = datetime.datetime.now()
+    total = end - start
+    print("Execution time: ", total)
     # Remove the batch dimension when returning multiple sequences
     if len(output_sequences.shape) > 2:
         output_sequences.squeeze_()
@@ -443,7 +432,6 @@ def main():
         print(total_sequence)
 
     return generated_sequences
-
 
 if __name__ == "__main__":
     main()
