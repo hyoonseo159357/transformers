@@ -342,6 +342,7 @@ def main():
     if tokenizer.pad_token is None:
         tokenizer.pad_token = tokenizer.eos_token
     model = model_class.from_pretrained(args.model_name_or_path)
+    model.to_neuron()
 
     # Set the model to the right device 모델을 distributed_state.device에 지정된 디바이스(CPU, GPU 등)
     # 로 이동합니다. 이는 모델의 계산을 해당 디바이스에서 수행하도록 설정하는 단계입니다.
@@ -387,7 +388,7 @@ def main():
 ####################################################################################
 # 모델 최적화하는 부분 - 이 코드 부분은 PyTorch의 Just-In-Time (JIT) 컴파일링 기능을 활용하여 모델의 
 # 추론 성능을 최적화하는 과정을 나타냅니다. JIT 컴파일링은 모델을 더 효율적으로 실행할 수 있는 중간 표현으로 변환합니다. 
-# 이를 통해 실행 시간이 단축되고, 메모리 사용량이 감소할 수 있습니다. ( 한마디로 컴파일 해주는 과정)
+# 이를 통해 실행 시간이 단축되고, 메모리 사용량이 감소할 수 있습니다. 
 ####################################################################################
     if args.jit:
         jit_input_texts = ["enable jit"]
