@@ -342,7 +342,9 @@ def main():
 
     if args.seed is not None:
         set_seed(args.seed)
-
+####################################################################################
+# 이 코드 부분은 사용자가 지정한 모델 유형에 따라 해당 모델과 토크나이저를 초기화하고, 
+####################################################################################
     # Initialize the model and tokenizer
     try:
         args.model_type = args.model_type.lower()
@@ -365,7 +367,11 @@ def main():
     logger.info(args)
 
     prompt_text = args.prompt if args.prompt else input("Model prompt >>> ")
-
+####################################################################################
+# 이 코드 부분은 사용자로부터 입력받은 텍스트(prompt_text)를 모델이 이해할 수 있는 형식으로 처리하는 과정을 나타냅니다. 
+# 서로 다른 모델들은 각기 다른 입력 형식과 추가적인 인자를 필요로 할 수 있습니다. 이 코드는 모델 타입에 따라 적절한 
+# 전처리를 수행하고, 텍스트를 모델에 입력할 수 있는 형태로 인코딩하는 역할을 합니다.
+####################################################################################
     # Different models need different input formatting and/or extra arguments
     requires_preprocessing = args.model_type in PREPROCESSING_FUNCTIONS.keys()
     if requires_preprocessing:
@@ -389,7 +395,11 @@ def main():
         input_ids = None
     else:
         input_ids = encoded_prompt
-
+####################################################################################
+# 모델 최적화하는 부분 - 이 코드 부분은 PyTorch의 Just-In-Time (JIT) 컴파일링 기능을 활용하여 모델의 
+# 추론 성능을 최적화하는 과정을 나타냅니다. JIT 컴파일링은 모델을 더 효율적으로 실행할 수 있는 중간 표현으로 변환합니다. 
+# 이를 통해 실행 시간이 단축되고, 메모리 사용량이 감소할 수 있습니다. 
+####################################################################################
     if args.jit:
         jit_input_texts = ["enable jit"]
         jit_inputs = prepare_jit_inputs(jit_input_texts, model, tokenizer)
@@ -406,7 +416,9 @@ def main():
         traced_model(*jit_inputs)
 
         model = _ModelFallbackWrapper(traced_model, model)
-
+####################################################################################
+# 여기서부터가 문장 생성하는 단계임
+####################################################################################
     output_sequences = model.generate(
         input_ids=input_ids,
         max_length=args.length + len(encoded_prompt[0]),
