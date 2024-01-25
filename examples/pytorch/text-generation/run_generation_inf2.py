@@ -342,7 +342,6 @@ def main():
     if tokenizer.pad_token is None:
         tokenizer.pad_token = tokenizer.eos_token
     model = model_class.from_pretrained(args.model_name_or_path)
-    model.to_neuron()
 
     # Set the model to the right device 모델을 distributed_state.device에 지정된 디바이스(CPU, GPU 등)
     # 로 이동합니다. 이는 모델의 계산을 해당 디바이스에서 수행하도록 설정하는 단계입니다.
