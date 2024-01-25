@@ -26,6 +26,7 @@ from typing import Tuple
 import torch
 from accelerate import PartialState
 from accelerate.utils import set_seed
+import datetime
 
 from transformers import (
     AutoTokenizer,
@@ -419,6 +420,7 @@ def main():
 ####################################################################################
 # 여기서부터가 문장 생성하는 단계임
 ####################################################################################
+     start = datetime.datetime.now()
     output_sequences = model.generate(
         input_ids=input_ids,
         max_length=args.length + len(encoded_prompt[0]),
@@ -429,6 +431,9 @@ def main():
         do_sample=True,
         num_return_sequences=args.num_return_sequences,
     )
+    end = datetime.datetime.now()
+    total = end - start
+    print("Execution time: ", total)
 
     # Remove the batch dimension when returning multiple sequences
     if len(output_sequences.shape) > 2:
