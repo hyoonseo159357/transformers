@@ -420,7 +420,7 @@ def main():
 ####################################################################################
 # 여기서부터가 문장 생성하는 단계임
 ####################################################################################
-     start = datetime.datetime.now()
+    start = datetime.datetime.now()
     output_sequences = model.generate(
         input_ids=input_ids,
         max_length=args.length + len(encoded_prompt[0]),
